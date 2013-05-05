@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <script type="text/javascript" src="tabletop.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+
+      google.load('visualization', '1.0', {'packages': ['corechart']});
+
+      google.setOnLoadCallback(setupChart);
+    
+      function setupChart() {
+        window.chart = new google.visualization.LineChart(document.getElementById('chart_div'));        
+      }
+
+      function drawChart() {
+        console.log(table_data)
+        var arrays = [['xlabel', 'ylabel']];
+        for (var i=0; i<window.table_data.length; i++) {
+          arrays.push([parseInt(window.table_data[i].xlabel), parseInt(window.table_data[i].ylabel)]);
+        }
+        console.log(arrays)
+        var data = google.visualization.arrayToDataTable(arrays);
+
+        var options = {
+          title: 'the title'
+        };
+        window.chart.draw(data, options);
+      }
+
+      window.onload = function() { 
+        setInterval(function() {
+          Tabletop.init( { key: window.location.search.replace('?','').replace('/',''), callback: function(data) {
+            window.table_data = data; 
+            if (boom == true) {
+              drawChart();
+            }      
+          }, simpleSheet: true } );
+        }, 1000);
+      };
+      var interval = setInterval(function() {
+        if (window.table_data && window.chart) {
+          window.boom = true;
+          clearInterval(interval);
+          drawChart();
+        } 
+      }, 100);
+    </script>
+  </head>
+
+  <body>
+    <div id="chart_div"></div>
+  </body>
+</html>
